@@ -1,0 +1,10 @@
+vendor
+.env
+tags
+buildFolder
+
+###> phpunit/phpunit ###
+/phpunit.xml
+###< phpunit/phpunit ###
+test.log
+cache

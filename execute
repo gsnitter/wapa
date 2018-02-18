@@ -1,0 +1,13 @@
+#! /usr/bin/php
+<?php
+
+namespace SniWapa\Command;
+
+require_once __DIR__ . '/src/bootstrap.php';
+
+use SniWapa\Command\WapaCommand;
+use Symfony\Component\Console\Application;
+
+$application = new Application();
+$application->add(new WapaCommand());
+$application->run();

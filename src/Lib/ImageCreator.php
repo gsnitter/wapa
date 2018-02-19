@@ -4,6 +4,7 @@ namespace SniWapa\Lib;
 
 use SniWapa\Entity\Dimension;
 use SniWapa\Lib\Logger;
+use SniWapa\Lib\Screen;
 
 class ImageCreator
 {
@@ -48,6 +49,7 @@ class ImageCreator
     private function createGradientIfNotExists()
     {
         $buildPath = $this->getBuildPath();
+        $displayString = Screen::getDisplayString();
 
         $this->log('Start', true);
         if (!is_readable($buildPath . '/general_mask.png')) {
@@ -55,8 +57,8 @@ class ImageCreator
             $command =
 <<<MAGICK_COMMAND
             cd $buildPath;
-            DISPLAY=:0.0 convert -size 500x500 xc: -channel G -fx '(1-abs(2*i/w-1)^1.5)*(1-abs(2*j/h-1)^3.2)' -separate gr.png
-            DISPLAY=:0.0 convert gr.png -alpha copy -channel A -negate general_mask.png
+            $displayString convert -size 500x500 xc: -channel G -fx '(1-abs(2*i/w-1)^1.5)*(1-abs(2*j/h-1)^3.2)' -separate gr.png
+            $displayString convert gr.png -alpha copy -channel A -negate general_mask.png
             rm gr.png
 MAGICK_COMMAND;
             exec($command);
@@ -78,29 +80,30 @@ MAGICK_COMMAND;
         $this->createGradientIfNotExists();
         $buildPath = $this->getBuildPath();
         $backgroundRGB = $this->config->getBackgroundRGB();
+        $displayString = Screen::getDisplayString();
 
         $this->log('Creating image');
         $command = 
 <<<MAGICK_COMMAND
             cd $buildPath;
             # Verkleinern auf halbe Bildschirmbreite mit korrekter Aspect Ratio
-            DISPLAY=:0.0 convert {$escapedImageIn} -auto-orient -resize {$newDim} out.png;
+            {$displayString} convert {$escapedImageIn} -auto-orient -resize {$newDim} out.png;
 
             # Ein Gradient als Rahmen, könnte man eigentlich einmalig berechnen und dann passend skalieren
             # convert out.png xc: -channel G -fx '(1-abs(2*i/w-1)^1.5)*(1-abs(2*j/h-1)^3.2)' -separate gr.png
             # convert gr.png -alpha copy -channel A -negate mask.png
 
             # Obige zwei Zeilen sind rechenintensiv, besser mask einmal berechnen, dann resizen mit
-            DISPLAY=:0.0 convert general_mask.png -resize '{$newDim->getWidth()}!x{$newDim->getHeight()}!' mask.png
+            {$displayString} convert general_mask.png -resize '{$newDim->getWidth()}!x{$newDim->getHeight()}!' mask.png
 
-            DISPLAY=:0.0 convert -size {$newDim} xc:'{$backgroundRGB}' small_background.png
-            DISPLAY=:0.0 convert small_background.png out.png mask.png -composite result.png
+            {$displayString} convert -size {$newDim} xc:'{$backgroundRGB}' small_background.png
+            {$displayString} convert small_background.png out.png mask.png -composite result.png
 
             # Jetzt ein großes Bild kreiern
-            DISPLAY=:0.0 convert -size {$resDim} xc:'{$backgroundRGB}' big_background.png
+            {$displayString} convert -size {$resDim} xc:'{$backgroundRGB}' big_background.png
 
             # Schließlich zusammenfügen
-            DISPLAY=:0.0 convert -alpha off -gravity southeast big_background.png result.png -composite final.png
+            {$displayString} convert -alpha off -gravity southeast big_background.png result.png -composite final.png
 MAGICK_COMMAND;
         $this->log($command);
         exec($command);

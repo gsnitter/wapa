@@ -3,6 +3,7 @@
 namespace SniWapa\Entity;
 
 use SniWapa\Lib\Logger;
+use SniWapa\Lib\Screen;
 
 class Dimension
 {
@@ -41,7 +42,8 @@ class Dimension
 
     public static function createByResolution(): Dimension
     {
-        $string = `DISPLAY=:0.0 xdpyinfo  | grep 'dimensions:'`;
+        $displayString = Screen::getDisplayString();
+        $string = `{$displayString} xdpyinfo  | grep 'dimensions:'`;
         preg_match('/dimensions:\s+(\d+)x(\d+)/', $string, $matches);
 
         if (count($matches) != 3) {

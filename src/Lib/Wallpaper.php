@@ -35,7 +35,8 @@ class Wallpaper
 
     public function show(string $imageIn)
     {
-        exec('DISPLAY=:0.0 feh --bg-fill ' . $this->prepare($imageIn));
+        $displayString = Screen::getDisplayString();
+        exec("{$displayString} feh --bg-fill " . $this->prepare($imageIn));
     }
 
     public function getTargetPath(string $imageIn): string

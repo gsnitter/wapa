@@ -50,6 +50,11 @@ class Dimension
             throw new \Exception("Resolution string {$string} not parseable.");
         }
 
-        return new Dimension(intval($matches[1]), intval($matches[2]));
+        $x = intval($matches[1]);
+        if (Screen::twoMonitorsConnected()) {
+            $x = $x/2;
+        }
+
+        return new Dimension($x, intval($matches[2]));
     }
 }

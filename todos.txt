@@ -1,2 +1,0 @@
-- decent error message, if getenv('IMAGE_SOURCE') can't be found
-- handle DISPLAY value. Maybe take it from $DISPLAY and stored in .env?

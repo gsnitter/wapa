@@ -81,7 +81,7 @@ HELP
             $this->setBackgroundColor($backgroundColor);
         }
 
-        $this->getConfigStorage()->saveChanges();
+        $hasChanged = $this->getConfigStorage()->saveChanges();
 
         if ($imageIn = $input->getOption('create')) {
             $imageOut = $this->createImage($imageIn);
@@ -92,7 +92,7 @@ HELP
             $this->show($imageIn);
         }
 
-        if ($input->getOption('forward')) {
+        if ($hasChanged || $input->getOption('forward')) {
             $this->forward();
         }
 

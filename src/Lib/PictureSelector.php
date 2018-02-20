@@ -2,6 +2,8 @@
 
 namespace SniWapa\Lib;
 
+use SniWapa\Lib\ConfigStorage;
+
 /**
  * This class chooses a more or less random picture to show.
  */
@@ -9,8 +11,15 @@ class PictureSelector
 {
     private $pathes;
 
-    public function __construct()
+    public function __construct(ConfigStorage $configStorage)
     {
+        $this->configStorage = $configStorage;
+
+        if ($configStorage->useNullImage()) {
+            $this->pathes = [__DIR__ . '/../Assets/NullImage.jpg'];
+            return;
+        }
+
         $this->checkImageSource();
         $this->pathes = glob(getenv('IMAGE_SOURCE') . '/*');
     }

@@ -128,4 +128,9 @@ class ConfigStorage
         }
         return true;
     }
+
+    public function useNullImage(): bool
+    {
+        return ($this->getMaxX() == 0 || $this->getMaxY() == 0);
+    }
 }

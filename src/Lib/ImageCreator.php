@@ -31,9 +31,8 @@ class ImageCreator
         return $this->getBuildPath() . '/final.png';
     }
 
-    private function getBuildPath()
+    private function getBuildPath(): string
     {
-        // TODO SNI
         return getenv('BUILD_FOLDER') ? : DI::getProjectPath() . '/buildFolder';
     }
 

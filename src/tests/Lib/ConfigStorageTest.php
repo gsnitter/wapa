@@ -112,4 +112,11 @@ class ConfigStorageTest extends TestCase
         $this->assertSame(30, $this->configStorage->getMaxY());
         $this->assertSame('#224466', $this->configStorage->getBackgroundColor());
     }
+
+    public function testUseNullImage()
+    {
+        $this->assertFalse($this->configStorage->useNullImage());
+        $this->configStorage->setMaxY(0);
+        $this->assertTrue($this->configStorage->useNullImage());
+    }
 }

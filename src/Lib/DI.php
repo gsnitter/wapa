@@ -28,7 +28,12 @@ class DI
 
     public static function getFileCachePath(): string
     {
-        return getenv('FILE_CACHE')? : self::getProjectPath() . '/cache';
+        return getenv('IMAGE_CACHE')? : '/tmp/wapa';
+    }
+
+    public static function getConfigPath(): string
+    {
+        return getenv('CONFIG_PATH')? : self::getProjectPath() . '/config_storage.json';
     }
 
     public static function getProjectPath(): string

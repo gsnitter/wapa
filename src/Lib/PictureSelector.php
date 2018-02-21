@@ -22,6 +22,7 @@ class PictureSelector
 
         $this->checkImageSource();
         $this->pathes = glob(getenv('IMAGE_SOURCE') . '/*');
+        $this->logPath = DI::getFileCachePath() . '/pathes.log';
     }
 
     public function checkImageSource()
@@ -39,6 +40,17 @@ class PictureSelector
     public function chooseOne(): string
     {
         $key = rand(0, count($this->pathes) - 1);
-        return $this->pathes[$key];
+        $path = $this->pathes[$key];
+
+        if (count($this->pathes) > 0) {
+            $this->logPath($path);
+        }
+
+        return $path;
+    }
+
+    public function logPath($path)
+    {
+        file_put_contents($this->logPath, "\n" . $path, FILE_APPEND);
     }
 }

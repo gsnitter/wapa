@@ -26,7 +26,7 @@ class Wallpaper
 
         if (!is_readable($outPath)) {
             $buildPath = $this->creator->create($imageIn);
-            $this->fs->mkdir($this->getImageCachePath()); 
+            $this->fs->mkdir(DI::getFileCachePath()); 
             rename($buildPath, $outPath);
         }
 
@@ -44,11 +44,6 @@ class Wallpaper
         $hash = sha1($imageIn);
         $ext = pathinfo($imageIn, PATHINFO_EXTENSION);
 
-        return $this->getImageCachePath() . "/{$hash}.{$ext}";
-    }
-
-    private function getImageCachePath(): string
-    {
-        return getenv('IMAGE_CACHE')? : '/tmp/wapa';
+        return DI::getFileCachePath() . "/{$hash}.{$ext}";
     }
 }

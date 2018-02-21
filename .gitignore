@@ -7,4 +7,4 @@ buildFolder
 /phpunit.xml
 ###< phpunit/phpunit ###
 test.log
-cache
+config_storage.json

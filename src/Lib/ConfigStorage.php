@@ -106,7 +106,7 @@ class ConfigStorage
         }
 
         $this->fs->dumpFile(
-            DI::getFileCachePath(),
+            DI::getConfigPath(),
             json_encode($this->getArrayRepresentation())
         );
         $this->hasChanged = false;
@@ -115,7 +115,7 @@ class ConfigStorage
 
     public function loadConfig(): bool
     {
-        $path = DI::getFileCachePath();
+        $path = DI::getConfigPath();
 
         if (!$this->fs->exists($path)) {
             return false;

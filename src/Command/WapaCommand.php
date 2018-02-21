@@ -62,6 +62,13 @@ HELP
 Returns a path to a random wallpaper.
 HELP
             )
+            ->addOption('hard-link-current', 'H', INPUTOPTION::VALUE_REQUIRED,
+<<<HELP
+Usage: wapa --hard-link-current /some/target/path/image_prefix
+Hard links the current original image to something like /some/target/path/image_prefix_12.jpg,
+keeping the original file extension and giving it a unique numeric postfix.
+HELP
+            )
             ;
     }
 
@@ -98,6 +105,10 @@ HELP
 
         if ($input->getOption('Forward')) {
             $this->showRandomWallpaperPath();
+        }
+
+        if ($path = $input->getOption('hard-link-current')) {
+            throw new \Exception('Not implemented yet');
         }
     }
 

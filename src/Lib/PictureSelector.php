@@ -49,8 +49,36 @@ class PictureSelector
         return $path;
     }
 
+    public function chooseNext(): string
+    {
+        $current = self::getCurrentDisplayedWallpaper();
+
+        if (!$current) {
+            $resultingPath = $this->pathes[0];
+        } else {
+            $key = array_search(trim($current), $this->pathes);
+            if ($key === false) {
+                throw new \Exception("Pfad {$current} nicht gefunden.");
+            }
+            if ($key == count($this->pathes) - 1) {
+                throw new \Exception("Ordner wurde komplett durchsucht");
+            }
+            $resultingPath = $this->pathes[$key + 1];
+        }
+
+        $this->logPath($resultingPath);
+        return $resultingPath;
+    }
+
     public function logPath($path)
     {
         file_put_contents($this->logPath, "\n" . $path, FILE_APPEND);
+    }
+
+    public static function getCurrentDisplayedWallpaper(): string
+    {
+        $command = 'tail -n 1 ' . DI::getFileCachePath() . '/pathes.log';
+        $path = `$command`;
+        return $path ? $path : '';
     }
 }

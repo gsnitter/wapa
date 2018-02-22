@@ -14,6 +14,7 @@ class ConfigStorage
     {
         $this->fs = $fs;
         $this->loadConfig();
+        $this->hasChanged = false;
     }
 
     public function setMaxX(int $maxX): ConfigStorage
@@ -101,7 +102,7 @@ class ConfigStorage
 
     public function saveChanges(): bool
     {
-        if (!$this->hasChanged()) {
+        if (!$this->hasChanged) {
             return false;
         }
 

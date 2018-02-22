@@ -15,6 +15,7 @@ use SniWapa\Lib\ImageCreator;
 use SniWapa\Lib\Wallpaper;
 use SniWapa\Lib\PictureSelector;
 use SniWapa\Lib\Logger;
+use SniWapa\Lib\HardLinker;
 
 class WapaCommand extends Command
 {
@@ -108,7 +109,7 @@ HELP
         }
 
         if ($path = $input->getOption('hard-link-current')) {
-            throw new \Exception('Not implemented yet');
+            $this->hardLinkCurrentWallpaperTo($path);
         }
     }
 
@@ -155,6 +156,7 @@ HELP
         $path = $this->container
             ->get(PictureSelector::class)
             ->chooseOne();
+            // ->chooseNext();
 
         $this->show($path);
     }
@@ -170,5 +172,12 @@ HELP
             ->prepare($imageIn);
 
         $this->output->writeln($path);
+    }
+
+    private function hardLinkCurrentWallpaperTo(string $path)
+    {
+        $this->container
+            ->get(HardLinker::class)
+            ->hardLinkCurrentWallpaperTo($path);
     }
 }

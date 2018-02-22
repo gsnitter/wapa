@@ -2,8 +2,6 @@
 
 namespace SniWapa\Lib;
 
-use SniTodos\Parser as Parser;
-use SniTodos\Entity\Todo;
 use Symfony\Component\Filesystem\Filesystem as BaseFileSystem;
 
 class Filesystem extends BaseFileSystem

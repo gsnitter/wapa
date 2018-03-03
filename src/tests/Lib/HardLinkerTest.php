@@ -10,7 +10,8 @@ class HardLinkerTest extends TestCase
 {
     public function testGetMaxPostfix()
     {
-        $hardLinker = new HardLinker();
+        $fs = new MockedFilesystem();
+        $hardLinker = new HardLinker($fs);
 
         $this->assertSame(0, $hardLinker->getMaxPostfix([]));
         $this->assertSame(23, $hardLinker->getMaxPostfix([

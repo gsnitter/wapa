@@ -70,7 +70,7 @@ class ConfigStorageTest extends TestCase
         $this->configStorage->setMaxX(70);
 
         $this->assertTrue($this->configStorage->saveChanges());
-        $content = $this->fs->getContent(DI::getFileCachePath());
+        $content = $this->fs->getContent(DI::getConfigPath());
         $this->assertContains('"maxX":70', $content);
         $this->assertFalse($this->configStorage->hasChanged());
     }

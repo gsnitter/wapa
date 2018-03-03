@@ -155,8 +155,8 @@ HELP
     {
         $path = $this->container
             ->get(PictureSelector::class)
-            ->chooseOne();
-            // ->chooseNext();
+            // ->chooseOne();
+            ->chooseNext();
 
         $this->show($path);
     }

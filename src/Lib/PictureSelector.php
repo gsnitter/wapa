@@ -11,9 +11,19 @@ class PictureSelector
 {
     private $pathes;
 
-    public function __construct(ConfigStorage $configStorage)
+    /** @var ConfigStorage $configStorage */
+    private $configStorage;
+
+    /** @var Filesystem $fs */
+    private $fs;
+
+    /** @var string $logPath */
+    private $logPath;
+
+    public function __construct(ConfigStorage $configStorage, Filesystem $fs)
     {
         $this->configStorage = $configStorage;
+        $this->fs = $fs;
 
         if ($configStorage->useNullImage()) {
             $this->pathes = [__DIR__ . '/../Assets/NullImage.jpg'];
@@ -51,6 +61,9 @@ class PictureSelector
 
     public function chooseNext(): string
     {
+        if (count($this->pathes) == 1 && basename($this->pathes[0]) == 'NullImage.jpg') {
+            return $this->pathes[0];
+        }
         $current = self::getCurrentDisplayedWallpaper();
 
         if (!$current) {
@@ -58,7 +71,13 @@ class PictureSelector
         } else {
             $key = array_search(trim($current), $this->pathes);
             if ($key === false) {
-                throw new \Exception("Pfad {$current} nicht gefunden.");
+                $text =  "Path {$current} not found.";
+                if (count($this->pathes) == 0) {
+                    $text .= ' No pictures found in ' . getenv('IMAGE_SOURCE') . '.';
+                } else {
+                    $text .= ' Searching in ' . dirname($this->pathes[0]) . '.';
+                }
+                throw new \Exception($text);
             }
             if ($key == count($this->pathes) - 1) {
                 throw new \Exception("Ordner wurde komplett durchsucht");
@@ -72,11 +91,21 @@ class PictureSelector
 
     public function logPath($path)
     {
+        // Wenn wir das "NULL"-Image anzeigen, loggen wir den Pfad nicht.
+        if (!$this->logPath) {
+            return;
+        }
+
+        $this->fs->mkdir(dirname($this->logPath));
         file_put_contents($this->logPath, "\n" . $path, FILE_APPEND);
     }
 
     public static function getCurrentDisplayedWallpaper(): string
     {
+        if (!is_readable(DI::getFileCachePath() . '/pathes.log')) {
+            return '';
+        }
+
         $command = 'tail -n 1 ' . DI::getFileCachePath() . '/pathes.log';
         $path = `$command`;
         return $path ? $path : '';

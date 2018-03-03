@@ -4,6 +4,7 @@ namespace SniWapa\tests\Lib;
 
 use SniWapa\Lib\PictureSelector;
 use PHPUnit\Framework\TestCase;
+use SniWapa\tests\Lib\MockedFilesystem;
 
 class PictureSelectorTest extends TestCase
 {
@@ -15,7 +16,7 @@ class PictureSelectorTest extends TestCase
             ->method('useNullImage')
             ->willReturn(true);
 
-        $selector = new PictureSelector($configStorage);
+        $selector = new PictureSelector($configStorage, new MockedFilesystem());
         $this->assertRegExp('@/Assets/NullImage.jpg@', $selector->chooseOne());
         $this->assertFileExists($selector->chooseOne());
     }

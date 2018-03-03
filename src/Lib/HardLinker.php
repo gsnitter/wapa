@@ -23,6 +23,11 @@ class HardLinker
         $dir = $this->dirname($path);
         $nextPostfix = $this->getMaxPostfix(glob($dir . '/*')) + 1;
         $currentPath = PictureSelector::getCurrentDisplayedWallpaper();
+
+        if (!$currentPath) {
+            throw new \Exception('HardLink cannot identify current wallpaper.');
+        }
+
         $extension = pathinfo($currentPath)['extension'] ?? null;
         if (!$extension) {
             throw new \Exception("Cannot extract extension of current wallpaper {$currentPath}.");

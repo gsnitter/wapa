@@ -56,9 +56,17 @@ class ImageCreator
             $command =
 <<<MAGICK_COMMAND
             cd $buildPath;
-            $displayString convert -size 500x500 xc: -channel G -fx '(1-abs(2*i/w-1)^1.5)*(1-abs(2*j/h-1)^3.2)' -separate gr.png
-            $displayString convert gr.png -alpha copy -channel A -negate general_mask.png
-            rm gr.png
+            $displayString convert -size 50x500 xc: -channel G -fx '3/w^2 * i^2  - 2/w^3 i^3' -separate vert.png
+            $displayString convert -size 500x50 xc: -channel G -fx '3/h^2 * j^2  - 2/h^3 j^3' -separate hori.png
+            $displayString convert -size 50x50 xc: -channel G -fx '(3/h^2 * j^2  - 2/h^3 j^3) * (3/w^2 * i^2  - 2/w^3 i^3)' -separate corner.png
+            $displayString convert -size 500x500 xc:#ffffff white.png
+
+            $displayString convert -gravity northwest white.png hori.png -composite general_mask.png
+            $displayString convert -gravity northwest general_mask.png vert.png -composite general_mask.png
+            $displayString convert -gravity northwest general_mask.png corner.png -composite general_mask.png
+
+            # $displayString convert gr.png -alpha copy -channel A -negate general_mask.png
+            rm vert.png hori.png corner.png
 MAGICK_COMMAND;
             exec($command);
         }

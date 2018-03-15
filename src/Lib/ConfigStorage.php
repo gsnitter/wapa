@@ -7,6 +7,7 @@ class ConfigStorage
     private $maxX = 50;
     private $maxY = 100;
     private $backgroundColor = '#777777';
+    private $cronActive = true;
     private $hasChanged = false;
     private $fs;
 
@@ -71,7 +72,19 @@ class ConfigStorage
             'maxX' => $this->getMaxX(),
             'maxY' => $this->getMaxY(),
             'backgroundColor' => $this->getBackgroundColor(),
+            'cronActive' => $this->isCronActive(),
         ];
+    }
+
+    public function isCronActive(): bool
+    {
+        return $this->cronActive;
+    }
+
+    public function setCronActive(bool $bool): ConfigStorage
+    {
+        $this->cronActive = $bool;
+        return $this;
     }
 
     public function getBackgroundColor(): string
@@ -100,9 +113,9 @@ class ConfigStorage
         return $matches;
     }
 
-    public function saveChanges(): bool
+    public function saveChanges(bool $force = false): bool
     {
-        if (!$this->hasChanged) {
+        if (!$force && !$this->hasChanged) {
             return false;
         }
 

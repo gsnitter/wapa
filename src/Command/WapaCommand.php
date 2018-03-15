@@ -16,6 +16,7 @@ use SniWapa\Lib\Wallpaper;
 use SniWapa\Lib\PictureSelector;
 use SniWapa\Lib\Logger;
 use SniWapa\Lib\HardLinker;
+use SniWapa\Lib\ConstBackgroundDisplayer;
 
 class WapaCommand extends Command
 {
@@ -58,9 +59,19 @@ HELP
 Show next random wallpaper.
 HELP
             )
-            ->addOption('Forward', 'F', INPUTOPTION::VALUE_NONE,
+            ->addOption('cron', null, INPUTOPTION::VALUE_NONE,
 <<<HELP
-Returns a path to a random wallpaper.
+Shows next wallpapers if wapa on is set.
+HELP
+            )
+            ->addOption('on', null, INPUTOPTION::VALUE_NONE,
+<<<HELP
+Cancel the effect of the "off"-option.
+HELP
+            )
+            ->addOption('off', null, INPUTOPTION::VALUE_NONE,
+<<<HELP
+Shows uniform background. The "cron"-option does not show the next image any more.
 HELP
             )
             ->addOption('hard-link-current', 'H', INPUTOPTION::VALUE_REQUIRED,
@@ -100,16 +111,67 @@ HELP
             $this->show($imageIn);
         }
 
-        if ($hasChanged || $input->getOption('forward')) {
+        if ($input->getOption('cron')) {
+            $this->cron();
+        }
+
+        if ($hasChanged) {
+            if ($this->getConfigStorage()->isCronActive()) {
+                $this->container
+                    ->get(ImageCreator::class)
+                    ->clearBuildFolder();
+
+                $this->forward();
+            } else {
+                $this->showConstantBackground();
+            }
+        }
+
+        if ($input->getOption('forward')) {
             $this->forward();
         }
 
-        if ($input->getOption('Forward')) {
-            $this->showRandomWallpaperPath();
+        if ($input->getOption('off')) {
+            $this->setCronOff();
+        }
+
+        if ($input->getOption('on')) {
+            $this->setCronOn();
         }
 
         if ($path = $input->getOption('hard-link-current')) {
             $this->hardLinkCurrentWallpaperTo($path);
+        }
+    }
+
+    private function setCronOff()
+    {
+        $color = $this->getConfigStorage()
+            ->setCronActive(false)
+            ->saveChanges(true);
+
+        $this->showConstantBackground();
+    }
+
+    private function showConstantBackground()
+    {
+        $this->container
+            ->get(ConstBackgroundDisplayer::class)
+            ->showBackground($this->getConfigStorage()->getBackgroundColor());
+    }
+
+    private function setCronOn()
+    {
+        $color = $this->getConfigStorage()
+            ->setCronActive(true)
+            ->saveChanges(true);
+        $this->forward();
+    }
+
+    private function cron()
+    {
+        if ($this->getConfigStorage()->isCronActive()) {
+            $this->forward();
         }
     }
 
@@ -134,6 +196,7 @@ HELP
 
     private function setBackgroundColor(string $backgroundColor)
     {
+        $backgroundColor = preg_replace('@^=@', '', $backgroundColor);
         $this->getConfigStorage()
             ->setBackgroundColor($backgroundColor);
     }
@@ -155,8 +218,8 @@ HELP
     {
         $path = $this->container
             ->get(PictureSelector::class)
-            // ->chooseOne();
-            ->chooseNext();
+            ->chooseOne();
+            // ->chooseNext();
 
         $this->show($path);
     }

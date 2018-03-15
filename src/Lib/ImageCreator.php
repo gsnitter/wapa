@@ -31,6 +31,15 @@ class ImageCreator
         return $this->getBuildPath() . '/final.png';
     }
 
+    public function createConstColoredImage(string $colorString): string
+    {
+        $buildPath = $this->getBuildPath();
+        $displayString = Screen::getDisplayString();
+        $command = "cd $buildPath && $displayString convert -size 10x10 xc:$colorString const_background.png";
+        exec($command);
+        return $buildPath . '/const_background.png';
+    }
+
     private function getBuildPath(): string
     {
         return getenv('BUILD_FOLDER') ? : DI::getProjectPath() . '/buildFolder';
@@ -86,7 +95,7 @@ MAGICK_COMMAND;
 
         $this->createGradientIfNotExists();
         $buildPath = $this->getBuildPath();
-        $backgroundRGB = $this->config->getBackgroundRGB();
+        $backgroundRGB = $this->config->getBackgroundColor();
         $displayString = Screen::getDisplayString();
 
         $this->log('Creating image');
@@ -115,5 +124,12 @@ MAGICK_COMMAND;
         $this->log($command);
         exec($command);
         $this->log('Done');
+    }
+
+    public function clearBuildFolder()
+    {
+        $buildPath = $this->getBuildPath();
+        $command = "rm {$buildPath}/*.png";
+        exec($command);
     }
 }

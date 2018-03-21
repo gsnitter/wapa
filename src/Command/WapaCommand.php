@@ -74,6 +74,11 @@ HELP
 Shows uniform background. The "cron"-option does not show the next image any more.
 HELP
             )
+            ->addOption('toggle', 't', INPUTOPTION::VALUE_NONE,
+<<<HELP
+Switches "on" to "of" and vice versa.
+HELP
+            )
             ->addOption('hard-link-current', 'H', INPUTOPTION::VALUE_REQUIRED,
 <<<HELP
 Usage: wapa --hard-link-current /some/target/path/image_prefix
@@ -139,8 +144,21 @@ HELP
             $this->setCronOn();
         }
 
+        if ($input->getOption('toggle')) {
+            $this->toggleCron();
+        }
+
         if ($path = $input->getOption('hard-link-current')) {
             $this->hardLinkCurrentWallpaperTo($path);
+        }
+    }
+
+    private function toggleCron()
+    {
+        if ($this->getConfigStorage()->isCronActive()) {
+            $this->setCronOff();
+        } else {
+            $this->setCronOn();
         }
     }
 

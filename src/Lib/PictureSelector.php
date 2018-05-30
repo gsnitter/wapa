@@ -31,8 +31,21 @@ class PictureSelector
         }
 
         $this->checkImageSource();
-        $this->pathes = glob(getenv('IMAGE_SOURCE') . '/*');
+        $this->getPathes();
         $this->logPath = DI::getFileCachePath() . '/pathes.log';
+    }
+
+    private function getPathes()
+    {
+        $this->pathes = glob(getenv('IMAGE_SOURCE') . '/*');
+
+        foreach ($this->pathes as $index => $path) {
+            if (preg_match('@pathes.log@', $path)) {
+                unset($this->pathes[$index]);
+            }
+        }
+
+        return $this->pathes;
     }
 
     public function checkImageSource()
@@ -98,6 +111,14 @@ class PictureSelector
 
         $this->fs->mkdir(dirname($this->logPath));
         file_put_contents($this->logPath, "\n" . $path, FILE_APPEND);
+    }
+
+    public function deleteCurrentImage()
+    {
+        $currentImagePath = `tail -n 1 {$this->logPath}`;
+        `head -n -1 {$this->logPath} > {$this->logPath}.bak ; mv {$this->logPath}.bak {$this->logPath}`;
+        $this->fs->remove($currentImagePath);
+        echo "{$currentImagePath} deleted\n";
     }
 
     public static function getCurrentDisplayedWallpaper(): string

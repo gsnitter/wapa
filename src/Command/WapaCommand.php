@@ -79,11 +79,17 @@ HELP
 Switches "on" to "of" and vice versa.
 HELP
             )
+            ->addOption('delete', 'd', INPUTOPTION::VALUE_NONE,
+<<<HELP
+Delete the current image.
+HELP
+            )
             ->addOption('hard-link-current', 'H', INPUTOPTION::VALUE_REQUIRED,
 <<<HELP
 Usage: wapa --hard-link-current /some/target/path/image_prefix
 Hard links the current original image to something like /some/target/path/image_prefix_12.jpg,
 keeping the original file extension and giving it a unique numeric postfix.
+Before processing a new folder, delete pathes.log (in IMAGE_CACHE) and update env-Variable IMAGE_SOURCE.
 HELP
             )
             ;
@@ -146,6 +152,10 @@ HELP
 
         if ($input->getOption('toggle')) {
             $this->toggleCron();
+        }
+
+        if ($input->getOption('delete')) {
+            $this->deleteCurrentImage();
         }
 
         if ($path = $input->getOption('hard-link-current')) {
@@ -253,6 +263,14 @@ HELP
             ->prepare($imageIn);
 
         $this->output->writeln($path);
+    }
+
+    private function deleteCurrentImage()
+    {
+        $imageIn = $this->container
+            ->get(PictureSelector::class)
+            ->deleteCurrentImage();
+        $this->forward();
     }
 
     private function hardLinkCurrentWallpaperTo(string $path)
